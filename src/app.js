@@ -3,15 +3,15 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 
-const authRoutes = require("../routes/auth.routes");
-const classroomRoutes = require("../routes/classroom.routes");
-const examRoutes = require("../routes/exam.routes");
-const questionRoutes = require("../routes/question.routes");
-const studentRoutes = require("../routes/student.routes");
-const resultRoutes = require("../routes/result.routes");
-const analyticsRoutes = require("../routes/analytics.routes");
+const authRoutes = require("./routes/auth.routes");
+const classroomRoutes = require("./routes/classroom.routes");
+const examRoutes = require("./routes/exam.routes");
+const questionRoutes = require("./routes/question.routes");
+const studentRoutes = require("./routes/student.routes");
+const resultRoutes = require("./routes/result.routes");
+const analyticsRoutes = require("./routes/analytics.routes");
 
-const errorMiddleware = require("../middleware/error.middleware");
+const errorMiddleware = require("./middleware/error.middleware");
 
 const app = express();
 
