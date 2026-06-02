@@ -60,6 +60,77 @@ exports.getExamById = async (req, res) => {
     });
   }
 };
+
+exports.updateExam = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const exam = await Exam.findById(id);
+
+    if (!exam) {
+      return res.status(404).json({
+        success: false,
+        message: "Exam not found",
+      });
+    }
+
+    const updatedExam = await Exam.findByIdAndUpdate(
+      id,
+      {
+        title: req.body.title,
+        description: req.body.description,
+        duration: req.body.duration,
+        totalMarks: req.body.totalMarks,
+        isPublished: req.body.isPublished,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Exam updated successfully",
+      data: updatedExam,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+exports.deleteExam = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const exam = await Exam.findById(id);
+
+    if (!exam) {
+      return res.status(404).json({
+        success: false,
+        message: "Exam not found",
+      });
+    }
+
+    await Exam.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Exam deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 exports.publishExam = async (req, res) => {
   try {
     const exam = await Exam.findByIdAndUpdate(

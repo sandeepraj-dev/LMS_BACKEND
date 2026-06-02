@@ -26,5 +26,18 @@ router.patch(
   roleMiddleware("ADMIN"),
   examController.publishExam,
 );
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  examController.updateExam,
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  examController.deleteExam,
+);
 
 module.exports = router;
