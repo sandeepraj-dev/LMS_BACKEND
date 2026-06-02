@@ -23,6 +23,23 @@ router.post(
   authMiddleware,
   roleMiddleware("ADMIN"),
   classroomController.addStudents,
+); // Get Classroom By Id
+router.get("/:id", authMiddleware, classroomController.getClassroomById);
+
+// Update Classroom
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  classroomController.updateClassroom,
+);
+
+// Delete Classroom
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  classroomController.deleteClassroom,
 );
 
 module.exports = router;

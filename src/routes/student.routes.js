@@ -13,5 +13,32 @@ router.post(
   roleMiddleware("STUDENT"),
   studentController.attemptExam,
 );
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  studentController.getStudents,
+);
+
+router.get(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  studentController.getStudentById,
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  studentController.updateStudent,
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  studentController.deleteStudent,
+);
 
 module.exports = router;
