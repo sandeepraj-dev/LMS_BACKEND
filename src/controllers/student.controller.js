@@ -1,6 +1,7 @@
 const Attempt = require("../models/Attempt");
 const Exam = require("../models/Exam");
 const Question = require("../models/Question");
+import User from "../models/User";
 
 exports.attemptExam = async (req, res) => {
   try {

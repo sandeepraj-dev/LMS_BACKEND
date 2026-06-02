@@ -6,13 +6,6 @@ const studentController = require("../controllers/student.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const roleMiddleware = require("../middleware/role.middleware");
 
-// Attempt Exam
-router.post(
-  "/exams/:examId/attempt",
-  authMiddleware,
-  roleMiddleware("STUDENT"),
-  studentController.attemptExam,
-);
 router.get(
   "/",
   authMiddleware,
@@ -39,6 +32,13 @@ router.delete(
   authMiddleware,
   roleMiddleware("ADMIN"),
   studentController.deleteStudent,
+);
+// Attempt Exam
+router.post(
+  "/exams/:examId/attempt",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.attemptExam,
 );
 
 module.exports = router;

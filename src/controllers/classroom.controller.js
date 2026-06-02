@@ -16,7 +16,6 @@ exports.createClassroom = async (req, res) => {
 exports.getClassrooms = async (req, res) => {
   try {
     const classrooms = await Classroom.find().populate("students");
-
     res.json(classrooms);
   } catch (error) {
     res.status(500).json({ message: error.message });
