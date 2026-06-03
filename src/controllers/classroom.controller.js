@@ -55,15 +55,54 @@ exports.getClassrooms = async (req, res) => {
 
 exports.addStudents = async (req, res) => {
   try {
-    const classroom = await Classroom.findById(req.params.id);
+    const { id } = req.params;
+    const { studentIds } = req.body;
 
-    classroom.students.push(...req.body.studentIds);
+    const classroom = await Classroom.findById(id);
+
+    if (!classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Classroom not found",
+      });
+    }
+
+    // Add students to classroom
+
+    classroom.students = [
+      ...new Set([
+        ...classroom.students.map((s) => s.toString()),
+        ...studentIds,
+      ]),
+    ];
 
     await classroom.save();
 
-    res.json(classroom);
+    // Add classroom to student records
+
+    await User.updateMany(
+      {
+        _id: { $in: studentIds },
+      },
+      {
+        $addToSet: {
+          classrooms: classroom._id,
+        },
+      },
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Students added successfully",
+      data: classroom,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
   }
 };
 /*
