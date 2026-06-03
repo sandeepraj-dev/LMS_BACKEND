@@ -45,5 +45,6 @@ router.get(
   "/:classroomId/students",
   classroomController.getStudentsByClassroom,
 );
+router.get("/:id", authMiddleware, classroomController.getClassroomById);
 
 module.exports = router;

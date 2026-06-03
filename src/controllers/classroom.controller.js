@@ -14,6 +14,35 @@ exports.createClassroom = async (req, res) => {
   }
 };
 
+exports.getClassroomById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const classroom = await Classroom.findById(id).populate(
+      "students",
+      "fullName username email role classroomIds",
+    );
+
+    if (!classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Classroom not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: classroom,
+    });
+  } catch (error) {
+    console.error("GET CLASSROOM ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 exports.getStudentsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
