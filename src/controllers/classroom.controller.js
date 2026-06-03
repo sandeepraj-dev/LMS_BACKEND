@@ -12,7 +12,6 @@ exports.createClassroom = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-const Classroom = require("../models/Classroom");
 
 exports.getStudentsByClassroom = async (req, res) => {
   try {
