@@ -24,7 +24,12 @@ router.post(
   roleMiddleware("ADMIN"),
   classroomController.addStudents,
 ); // Get Classroom By Id
-router.get("/:id", authMiddleware, classroomController.getClassroomById);
+router.get(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  classroomController.getClassroomById,
+);
 
 // Update Classroom
 router.put(
@@ -43,8 +48,15 @@ router.delete(
 );
 router.get(
   "/:classroomId/students",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
   classroomController.getStudentsByClassroom,
 );
-router.get("/:id", authMiddleware, classroomController.getClassroomById);
+router.get(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  classroomController.getClassroomById,
+);
 
 module.exports = router;

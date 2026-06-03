@@ -11,7 +11,14 @@ router.post(
   "/",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  questionController.createQuestion,
+  questionController.createQuestions,
+);
+
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  questionController.getQuestions,
 );
 
 // Update Question
@@ -19,7 +26,7 @@ router.put(
   "/:id",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  questionController.updateQuestion,
+  questionController.updateQuestions,
 );
 
 // Delete Question
