@@ -58,6 +58,13 @@ exports.addStudents = async (req, res) => {
     const { id } = req.params;
     const { studentIds } = req.body;
 
+    if (!studentIds || !Array.isArray(studentIds)) {
+      return res.status(400).json({
+        success: false,
+        message: "studentIds must be an array",
+      });
+    }
+
     const classroom = await Classroom.findById(id);
 
     if (!classroom) {
@@ -67,19 +74,33 @@ exports.addStudents = async (req, res) => {
       });
     }
 
-    // Add students to classroom
+    // Verify students exist
+    const students = await User.find({
+      _id: { $in: studentIds },
+      role: "STUDENT",
+    });
 
-    classroom.students = [
-      ...new Set([
-        ...classroom.students.map((s) => s.toString()),
-        ...studentIds,
-      ]),
+    if (students.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No valid students found",
+      });
+    }
+
+    // Add students to classroom
+    const existingStudentIds = classroom.students.map((student) =>
+      student.toString(),
+    );
+
+    const updatedStudentIds = [
+      ...new Set([...existingStudentIds, ...studentIds]),
     ];
+
+    classroom.students = updatedStudentIds;
 
     await classroom.save();
 
-    // Add classroom to student records
-
+    // Add classroom reference to students
     await User.updateMany(
       {
         _id: { $in: studentIds },
@@ -91,17 +112,22 @@ exports.addStudents = async (req, res) => {
       },
     );
 
+    const updatedClassroom = await Classroom.findById(id).populate(
+      "students",
+      "fullName username email",
+    );
+
     res.status(200).json({
       success: true,
       message: "Students added successfully",
-      data: classroom,
+      data: updatedClassroom,
     });
   } catch (error) {
-    console.log(error);
+    console.error("ADD STUDENTS ERROR:", error);
 
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
   }
 };
