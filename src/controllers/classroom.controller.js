@@ -12,6 +12,38 @@ exports.createClassroom = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const Classroom = require("../models/Classroom");
+
+exports.getStudentsByClassroom = async (req, res) => {
+  try {
+    const { classroomId } = req.params;
+
+    const classroom = await Classroom.findById(classroomId).populate(
+      "students",
+      "name email phone",
+    );
+
+    if (!classroom) {
+      return res.status(404).json({
+        success: false,
+        message: "Classroom not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: classroom.students.length,
+      students: classroom.students,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 
 exports.getClassrooms = async (req, res) => {
   try {

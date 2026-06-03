@@ -41,5 +41,6 @@ router.delete(
   roleMiddleware("ADMIN"),
   classroomController.deleteClassroom,
 );
+router.get("/:classroomId/students", getStudentsByClassroom);
 
 module.exports = router;
