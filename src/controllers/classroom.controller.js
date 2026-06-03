@@ -58,12 +58,8 @@ exports.addStudents = async (req, res) => {
     const { id } = req.params;
     const { studentIds } = req.body;
 
-    if (!studentIds || !Array.isArray(studentIds)) {
-      return res.status(400).json({
-        success: false,
-        message: "studentIds must be an array",
-      });
-    }
+    console.log("Classroom:", id);
+    console.log("Students:", studentIds);
 
     const classroom = await Classroom.findById(id);
 
@@ -74,58 +70,47 @@ exports.addStudents = async (req, res) => {
       });
     }
 
-    // Verify students exist
     const students = await User.find({
       _id: { $in: studentIds },
-      role: "STUDENT",
     });
 
-    if (students.length === 0) {
+    console.log("Found Students:", students.length);
+
+    if (!students.length) {
       return res.status(404).json({
         success: false,
-        message: "No valid students found",
+        message: "No students found",
       });
     }
 
-    // Add students to classroom
-    const existingStudentIds = classroom.students.map((student) =>
-      student.toString(),
-    );
-
-    const updatedStudentIds = [
-      ...new Set([...existingStudentIds, ...studentIds]),
+    classroom.students = [
+      ...new Set([
+        ...classroom.students.map((item) => item.toString()),
+        ...studentIds,
+      ]),
     ];
-
-    classroom.students = updatedStudentIds;
 
     await classroom.save();
 
-    // Add classroom reference to students
     await User.updateMany(
       {
         _id: { $in: studentIds },
       },
       {
         $addToSet: {
-          classrooms: classroom._id,
+          classroomIds: classroom._id,
         },
       },
     );
 
-    const updatedClassroom = await Classroom.findById(id).populate(
-      "students",
-      "fullName username email",
-    );
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Students added successfully",
-      data: updatedClassroom,
     });
   } catch (error) {
     console.error("ADD STUDENTS ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
