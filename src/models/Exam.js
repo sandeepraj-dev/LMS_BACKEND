@@ -5,6 +5,7 @@ const examSchema = new mongoose.Schema(
     classroomId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Classroom",
+      required: true,
     },
     title: String,
     description: String,

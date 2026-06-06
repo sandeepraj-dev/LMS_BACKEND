@@ -1,15 +1,15 @@
 const Exam = require("../models/Exam");
-
+const mongoose = require("mongoose");
 exports.createExam = async (req, res) => {
   try {
     const exam = await Exam.create({
       title: req.body.title,
       description: req.body.description,
-      classroomId: req.body.classroomId,
+      classroomId: new mongoose.Types.ObjectId(req.body.classroomId), // FIX
       duration: req.body.duration,
       isPublished: false,
       totalMarks: 0,
-      createdBy: req.user.id,
+      createdBy: new mongoose.Types.ObjectId(req.user.id), // FIX
     });
 
     res.status(201).json({
@@ -71,7 +71,28 @@ exports.getExamById = async (req, res) => {
     });
   }
 };
+exports.getExamsByClassroom = async (req, res) => {
+  try {
+    const classroomId = new mongoose.Types.ObjectId(req.params.classroomId);
 
+    console.log("Searching for classroomId:", classroomId);
+
+    const exams = await Exam.find({ classroomId })
+      .populate("classroomId", "name")
+      .sort({ createdAt: -1 });
+
+    console.log("Found exams:", exams.length);
+
+    res.json({
+      success: true,
+      count: exams.length,
+      data: exams,
+    });
+  } catch (error) {
+    console.log("ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
 exports.updateExam = async (req, res) => {
   try {
     const { id } = req.params;
