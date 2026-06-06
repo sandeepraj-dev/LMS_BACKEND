@@ -1,10 +1,14 @@
 const Question = require("../models/Question");
 
-exports.getQuestions = async (req, res) => {
+exports.getQuestionsByClassroom = async (req, res) => {
   try {
-    const questions = await Question.find().sort({ createdAt: -1 });
+    const { classroomId } = req.params;
 
-    res.json({
+    const questions = await Question.find({ classroomId }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({
       count: questions.length,
       data: questions,
     });
@@ -16,15 +20,14 @@ exports.getQuestions = async (req, res) => {
 };
 
 // Create Multiple Questions
-exports.createQuestions = async (req, res) => {
+exports.createQuestionsByClassroom = async (req, res) => {
   try {
-    const questions = req.body;
+    const { classroomId } = req.params;
 
-    if (!Array.isArray(questions) || questions.length === 0) {
-      return res.status(400).json({
-        message: "Please provide an array of questions",
-      });
-    }
+    const questions = req.body.map((q) => ({
+      ...q,
+      classroomId,
+    }));
 
     const createdQuestions = await Question.insertMany(questions);
 
@@ -40,8 +43,9 @@ exports.createQuestions = async (req, res) => {
   }
 };
 
-exports.updateQuestions = async (req, res) => {
+exports.updateQuestionsByClassroom = async (req, res) => {
   try {
+    const { classroomId } = req.params;
     const questions = req.body;
 
     if (!Array.isArray(questions) || questions.length === 0) {
@@ -52,17 +56,20 @@ exports.updateQuestions = async (req, res) => {
 
     const operations = questions.map((question) => ({
       updateOne: {
-        filter: { _id: question._id },
-        update: { $set: question },
+        filter: {
+          _id: question._id,
+          classroomId,
+        },
+        update: {
+          $set: question,
+        },
       },
     }));
 
     await Question.bulkWrite(operations);
 
-    const ids = questions.map((q) => q._id);
-
     const updatedQuestions = await Question.find({
-      _id: { $in: ids },
+      classroomId,
     });
 
     res.status(200).json({
@@ -76,14 +83,21 @@ exports.updateQuestions = async (req, res) => {
     });
   }
 };
-exports.deleteQuestion = async (req, res) => {
+exports.deleteQuestionsByClassroom = async (req, res) => {
   try {
-    await Question.findByIdAndDelete(req.params.id);
+    const { classroomId } = req.params;
 
-    res.json({
-      message: "Question deleted",
+    const result = await Question.deleteMany({
+      classroomId,
+    });
+
+    res.status(200).json({
+      message: "Questions deleted successfully",
+      deletedCount: result.deletedCount,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };

@@ -6,35 +6,36 @@ const questionController = require("../controllers/question.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const roleMiddleware = require("../middleware/role.middleware");
 
-// Create Question
+// Create Multiple Questions
 router.post(
-  "/",
+  "/classroom/:classroomId",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  questionController.createQuestions,
+  questionController.createQuestionsByClassroom,
 );
 
+// Get Questions By Classroom
 router.get(
-  "/",
+  "/classroom/:classroomId",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  questionController.getQuestions,
+  questionController.getQuestionsByClassroom,
 );
 
-// Update Question
+// Update Questions By Classroom
 router.put(
-  "/:id",
+  "/classroom/:classroomId",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  questionController.updateQuestions,
+  questionController.updateQuestionsByClassroom,
 );
 
-// Delete Question
+// Delete Single Question
 router.delete(
-  "/:id",
+  "/classroom/:classroomId",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  questionController.deleteQuestion,
+  questionController.deleteQuestionsByClassroom,
 );
 
 module.exports = router;

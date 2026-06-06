@@ -6,6 +6,11 @@ const questionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Exam",
     },
+    classroomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Classroom",
+      required: true,
+    },
     question: String,
     options: [String],
     correctAnswer: String,
