@@ -37,5 +37,11 @@ router.delete(
   roleMiddleware("ADMIN"),
   questionController.deleteQuestionsByClassroom,
 );
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  questionController.deleteQuestion,
+);
 
 module.exports = router;

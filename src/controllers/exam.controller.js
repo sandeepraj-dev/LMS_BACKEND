@@ -3,13 +3,24 @@ const Exam = require("../models/Exam");
 exports.createExam = async (req, res) => {
   try {
     const exam = await Exam.create({
-      ...req.body,
+      title: req.body.title,
+      description: req.body.description,
+      classroomId: req.body.classroomId,
+      duration: req.body.duration,
+      isPublished: false,
+      totalMarks: 0,
       createdBy: req.user.id,
     });
 
-    res.status(201).json(exam);
+    res.status(201).json({
+      success: true,
+      data: exam,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -80,7 +91,6 @@ exports.updateExam = async (req, res) => {
         title: req.body.title,
         description: req.body.description,
         duration: req.body.duration,
-        totalMarks: req.body.totalMarks,
         isPublished: req.body.isPublished,
       },
       {
@@ -95,11 +105,9 @@ exports.updateExam = async (req, res) => {
       data: updatedExam,
     });
   } catch (error) {
-    console.log(error);
-
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
   }
 };

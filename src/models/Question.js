@@ -1,21 +1,32 @@
-const mongoose = require("mongoose");
-
 const questionSchema = new mongoose.Schema(
   {
-    examId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Exam",
-    },
     classroomId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Classroom",
       required: true,
     },
-    question: String,
+
+    examId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Exam",
+      required: true,
+    },
+
+    question: {
+      type: String,
+      required: true,
+    },
+
     options: [String],
-    correctAnswer: String,
+
+    answer: {
+      type: String,
+      required: true,
+    },
+
     marks: {
       type: Number,
+      required: true,
       default: 1,
     },
   },
@@ -23,5 +34,3 @@ const questionSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
-
-module.exports = mongoose.model("Question", questionSchema);

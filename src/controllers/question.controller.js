@@ -1,5 +1,21 @@
 const Question = require("../models/Question");
+const Exam = require("../models/Exam");
 
+// Update Exam Total Marks
+const updateExamTotalMarks = async (examId) => {
+  const questions = await Question.find({ examId });
+
+  const totalMarks = questions.reduce(
+    (sum, question) => sum + (question.marks || 0),
+    0,
+  );
+
+  await Exam.findByIdAndUpdate(examId, {
+    totalMarks,
+  });
+};
+
+// Get Questions By Classroom
 exports.getQuestionsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
@@ -10,6 +26,7 @@ exports.getQuestionsByClassroom = async (req, res) => {
 
     res.status(200).json({
       count: questions.length,
+      totalMarks: questions.reduce((sum, q) => sum + (q.marks || 0), 0),
       data: questions,
     });
   } catch (error) {
@@ -19,7 +36,7 @@ exports.getQuestionsByClassroom = async (req, res) => {
   }
 };
 
-// Create Multiple Questions
+// Create Questions
 exports.createQuestionsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
@@ -30,6 +47,15 @@ exports.createQuestionsByClassroom = async (req, res) => {
     }));
 
     const createdQuestions = await Question.insertMany(questions);
+
+    // Update Exam Total
+    const examIds = [
+      ...new Set(createdQuestions.map((q) => q.examId.toString())),
+    ];
+
+    for (const examId of examIds) {
+      await updateExamTotalMarks(examId);
+    }
 
     res.status(201).json({
       message: "Questions created successfully",
@@ -43,6 +69,7 @@ exports.createQuestionsByClassroom = async (req, res) => {
   }
 };
 
+// Update Questions
 exports.updateQuestionsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
@@ -72,9 +99,19 @@ exports.updateQuestionsByClassroom = async (req, res) => {
       classroomId,
     });
 
+    // Update Exam Totals
+    const examIds = [
+      ...new Set(updatedQuestions.map((q) => q.examId.toString())),
+    ];
+
+    for (const examId of examIds) {
+      await updateExamTotalMarks(examId);
+    }
+
     res.status(200).json({
       message: "Questions updated successfully",
       count: updatedQuestions.length,
+      totalMarks: updatedQuestions.reduce((sum, q) => sum + (q.marks || 0), 0),
       data: updatedQuestions,
     });
   } catch (error) {
@@ -83,17 +120,66 @@ exports.updateQuestionsByClassroom = async (req, res) => {
     });
   }
 };
+
+// Delete All Questions In Classroom
 exports.deleteQuestionsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
+
+    const questions = await Question.find({ classroomId });
+
+    const examIds = [...new Set(questions.map((q) => q.examId.toString()))];
 
     const result = await Question.deleteMany({
       classroomId,
     });
 
+    for (const examId of examIds) {
+      await updateExamTotalMarks(examId);
+    }
+
     res.status(200).json({
       message: "Questions deleted successfully",
       deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.deleteQuestion = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const question = await Question.findById(id);
+
+    if (!question) {
+      return res.status(404).json({
+        message: "Question not found",
+      });
+    }
+
+    const examId = question.examId;
+
+    await Question.findByIdAndDelete(id);
+
+    // Recalculate total marks for the exam
+    const remainingQuestions = await Question.find({ examId });
+
+    const totalMarks = remainingQuestions.reduce(
+      (sum, q) => sum + (q.marks || 0),
+      0,
+    );
+
+    await Exam.findByIdAndUpdate(examId, {
+      totalMarks,
+    });
+
+    res.status(200).json({
+      message: "Question deleted successfully",
+      deletedQuestionId: id,
+      updatedExamTotalMarks: totalMarks,
     });
   } catch (error) {
     res.status(500).json({

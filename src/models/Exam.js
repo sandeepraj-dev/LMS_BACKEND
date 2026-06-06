@@ -9,7 +9,10 @@ const examSchema = new mongoose.Schema(
     title: String,
     description: String,
     duration: Number,
-    totalMarks: Number,
+    totalMarks: {
+      type: Number,
+      default: 0,
+    },
     isPublished: {
       type: Boolean,
       default: false,
