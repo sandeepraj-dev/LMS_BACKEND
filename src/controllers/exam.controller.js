@@ -44,6 +44,27 @@ exports.getExams = async (req, res) => {
     });
   }
 };
+
+exports.getExamsByClassroom = async (req, res) => {
+  try {
+    const { classroomId } = req.params;
+
+    const exams = await Exam.find({
+      classroomId: classroomId,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: exams.length,
+      data: exams,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 exports.getExamById = async (req, res) => {
   try {
     const exam = await Exam.findById(req.params.id).populate(
