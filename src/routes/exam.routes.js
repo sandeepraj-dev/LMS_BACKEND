@@ -17,11 +17,7 @@ router.post(
 // Get All Exams
 router.get("/", authMiddleware, examController.getExams);
 
-router.get(
-  "/classroom/:classroomId",
-  authMiddleware,
-  examController.getExamsByClassroom,
-);
+router.get("/:id", authMiddleware, examController.getExamById);
 
 // Publish Exam
 router.patch(
