@@ -49,9 +49,9 @@ exports.getExamsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
 
-    const exams = await Exam.find({
-      classroomId: classroomId,
-    }).sort({ createdAt: -1 });
+    const exams = await Exam.find({ classroomId })
+      .populate("classroomId", "name")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
