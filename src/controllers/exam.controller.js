@@ -162,15 +162,23 @@ exports.deleteExam = async (req, res) => {
 };
 exports.publishExam = async (req, res) => {
   try {
-    const exam = await Exam.findByIdAndUpdate(
-      req.params.id,
-      {
-        isPublished: true,
-      },
-      { new: true },
-    );
+    // Find exam by ID
+    const exam = await Exam.findById(req.params.id);
 
-    res.json(exam);
+    if (!exam) {
+      return res.status(404).json({ message: "Exam not found" });
+    }
+
+    // Toggle isPublished value
+    exam.isPublished = !exam.isPublished;
+
+    // Save updated exam
+    await exam.save();
+
+    res.status(200).json({
+      message: `Exam ${exam.isPublished ? "published" : "unpublished"} successfully`,
+      exam,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
