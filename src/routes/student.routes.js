@@ -5,6 +5,7 @@ const studentController = require("../controllers/student.controller");
 
 const authMiddleware = require("../middleware/auth.middleware");
 const roleMiddleware = require("../middleware/role.middleware");
+
 // Student routes first
 
 router.get("/my-classrooms", authMiddleware, studentController.getMyClassrooms);
@@ -73,3 +74,4 @@ router.get(
   roleMiddleware("ADMIN"),
   studentController.getStudents,
 );
+module.exports = router;
