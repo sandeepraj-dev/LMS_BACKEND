@@ -40,5 +40,51 @@ router.post(
   roleMiddleware("STUDENT"),
   studentController.attemptExam,
 );
+// Logged-in student classrooms
+router.get(
+  "/my-classrooms",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getMyClassrooms,
+);
 
+// Exams available for a classroom
+router.get(
+  "/classroom/:classroomId/exams",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getExamsByClassroom,
+);
+
+// Questions for a selected exam
+router.get(
+  "/exam/:examId/questions",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getExamQuestions,
+);
+
+// Submit exam attempt
+router.post(
+  "/exams/:examId/attempt",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.attemptExam,
+);
+
+// My exam history
+router.get(
+  "/attempts",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getMyAttempts,
+);
+
+// Specific attempt result
+router.get(
+  "/attempts/:attemptId",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getAttemptResult,
+);
 module.exports = router;
