@@ -33,15 +33,14 @@ router.delete(
   roleMiddleware("ADMIN"),
   studentController.deleteStudent,
 );
-// Attempt Exam
-router.post(
-  "/exams/:examId/attempt",
+
+// Logged-in student classrooms
+router.get(
+  "/my-classrooms",
   authMiddleware,
   roleMiddleware("STUDENT"),
-  studentController.attemptExam,
+  studentController.getMyClassrooms,
 );
-// Logged-in student classrooms
-router.get("/my-classrooms", authMiddleware, studentController.getMyClassrooms);
 
 // Exams available for a classroom
 router.get(
