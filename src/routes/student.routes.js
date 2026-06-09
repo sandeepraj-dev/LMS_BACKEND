@@ -35,12 +35,7 @@ router.delete(
 );
 
 // Logged-in student classrooms
-router.get(
-  "/my-classrooms",
-  authMiddleware,
-  roleMiddleware("STUDENT"),
-  studentController.getMyClassrooms,
-);
+router.get("/my-classrooms", authMiddleware, studentController.getMyClassrooms);
 
 // Exams available for a classroom
 router.get(
