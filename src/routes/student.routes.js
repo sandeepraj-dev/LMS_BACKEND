@@ -5,13 +5,46 @@ const studentController = require("../controllers/student.controller");
 
 const authMiddleware = require("../middleware/auth.middleware");
 const roleMiddleware = require("../middleware/role.middleware");
+// Student routes first
+
+router.get("/my-classrooms", authMiddleware, studentController.getMyClassrooms);
 
 router.get(
-  "/",
+  "/attempts",
   authMiddleware,
-  roleMiddleware("ADMIN"),
-  studentController.getStudents,
+  roleMiddleware("STUDENT"),
+  studentController.getMyAttempts,
 );
+
+router.get(
+  "/attempts/:attemptId",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getAttemptResult,
+);
+
+router.get(
+  "/classroom/:classroomId/exams",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getExamsByClassroom,
+);
+
+router.get(
+  "/exam/:examId/questions",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getExamQuestions,
+);
+
+router.post(
+  "/exams/:examId/attempt",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.attemptExam,
+);
+
+// Admin routes last
 
 router.get(
   "/:id",
@@ -34,46 +67,9 @@ router.delete(
   studentController.deleteStudent,
 );
 
-// Logged-in student classrooms
-router.get("/my-classrooms", authMiddleware, studentController.getMyClassrooms);
-
-// Exams available for a classroom
 router.get(
-  "/classroom/:classroomId/exams",
+  "/",
   authMiddleware,
-  roleMiddleware("STUDENT"),
-  studentController.getExamsByClassroom,
+  roleMiddleware("ADMIN"),
+  studentController.getStudents,
 );
-
-// Questions for a selected exam
-router.get(
-  "/exam/:examId/questions",
-  authMiddleware,
-  roleMiddleware("STUDENT"),
-  studentController.getExamQuestions,
-);
-
-// Submit exam attempt
-router.post(
-  "/exams/:examId/attempt",
-  authMiddleware,
-  roleMiddleware("STUDENT"),
-  studentController.attemptExam,
-);
-
-// My exam history
-router.get(
-  "/attempts",
-  authMiddleware,
-  roleMiddleware("STUDENT"),
-  studentController.getMyAttempts,
-);
-
-// Specific attempt result
-router.get(
-  "/attempts/:attemptId",
-  authMiddleware,
-  roleMiddleware("STUDENT"),
-  studentController.getAttemptResult,
-);
-module.exports = router;
