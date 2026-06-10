@@ -8,9 +8,19 @@ const roleMiddleware = require("../middleware/role.middleware");
 
 // Student routes first
 
-router.get("/my-classrooms", authMiddleware, studentController.getMyClassrooms);
+router.get(
+  "/my-classrooms",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getMyClassrooms,
+);
 
-router.get("/attempts", authMiddleware, studentController.getMyAttempts);
+router.get(
+  "/attempts",
+  authMiddleware,
+  roleMiddleware("STUDENT"),
+  studentController.getMyAttempts,
+);
 
 router.get(
   "/attempts/:attemptId",
