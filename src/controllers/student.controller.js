@@ -249,11 +249,19 @@ exports.getMyClassrooms = async (req, res) => {
 /**
  * GET /api/student/classroom/:classroomId/exams
  */
+
 exports.getExamsByClassroom = async (req, res) => {
   try {
     const { classroomId } = req.params;
 
     const student = await User.findById(req.user._id);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
 
     const hasAccess = student.classroomIds.some(
       (id) => id.toString() === classroomId,
@@ -269,6 +277,11 @@ exports.getExamsByClassroom = async (req, res) => {
     const exams = await Exam.find({
       classroomId,
       isPublished: true,
+
+      // Hide exams already attempted by current student
+      attemptedStudents: {
+        $nin: [req.user._id],
+      },
     })
       .populate("classroomId", "name")
       .sort({ createdAt: -1 });
@@ -424,6 +437,11 @@ exports.attemptExam = async (req, res) => {
       answers: evaluatedAnswers,
       score,
       submittedAt: new Date(),
+    });
+    await Exam.findByIdAndUpdate(examId, {
+      $addToSet: {
+        attemptedStudents: req.user._id,
+      },
     });
 
     res.status(201).json({
