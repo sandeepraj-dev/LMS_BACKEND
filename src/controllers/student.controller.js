@@ -426,9 +426,19 @@ exports.attemptExam = async (req, res) => {
 
       evaluatedAnswers.push({
         questionId: question._id,
+
+        question: question.question,
+
+        options: question.options || [],
+
         selectedAnswer: answer.selectedAnswer,
+
         correctAnswer: question.answer,
+
+        marks: question.marks,
+
         isCorrect,
+
         marksAwarded: isCorrect ? question.marks : 0,
       });
     }
@@ -518,6 +528,32 @@ exports.getAttemptResult = async (req, res) => {
   } catch (error) {
     console.error("GET RESULT ERROR:", error);
 
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.getStudentAttempts = async (req, res) => {
+  try {
+    const attempts = await Attempt.find({
+      studentId: req.user.id,
+    })
+      .populate({
+        path: "examId",
+        select: "title duration totalMarks",
+      })
+      .populate({
+        path: "answers.questionId",
+        select: "question options correctAnswer marks",
+      });
+
+    res.json({
+      success: true,
+      count: attempts.length,
+      data: attempts,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,
