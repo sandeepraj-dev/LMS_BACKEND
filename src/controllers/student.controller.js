@@ -416,7 +416,9 @@ exports.attemptExam = async (req, res) => {
 
       totalQuestions++;
 
-      const isCorrect = question.correctAnswer === answer.selectedAnswer;
+      const isCorrect =
+        question.answer.trim().toLowerCase() ===
+        answer.selectedAnswer.trim().toLowerCase();
 
       if (isCorrect) {
         score += question.marks;
@@ -425,7 +427,7 @@ exports.attemptExam = async (req, res) => {
       evaluatedAnswers.push({
         questionId: question._id,
         selectedAnswer: answer.selectedAnswer,
-        correctAnswer: question.correctAnswer,
+        correctAnswer: question.answer,
         isCorrect,
         marksAwarded: isCorrect ? question.marks : 0,
       });
