@@ -25,21 +25,21 @@ router.get(
 router.get(
   "/attempts/:attemptId",
   authMiddleware,
-  roleMiddleware[("STUDENT", "ADMIN")],
+  roleMiddleware("STUDENT", "ADMIN"),
   studentController.getAttemptResult,
 );
 
 router.get(
   "/classroom/:classroomId/exams",
   authMiddleware,
-  roleMiddleware("STUDENT"),
+  roleMiddleware("STUDENT", "ADMIN"),
   studentController.getExamsByClassroom,
 );
 
 router.get(
   "/exam/:examId/questions",
   authMiddleware,
-  roleMiddleware("STUDENT"),
+  roleMiddleware("STUDENT", "ADMIN"),
   studentController.getExamQuestions,
 );
 

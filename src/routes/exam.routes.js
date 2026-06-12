@@ -18,21 +18,21 @@ router.post(
 router.get(
   "/",
   authMiddleware,
-  roleMiddleware[("ADMIN", "STUDENT")],
+  roleMiddleware("ADMIN", "STUDENT"),
   examController.getExams,
 );
 
 router.get(
   "/:id",
   authMiddleware,
-  roleMiddleware[("ADMIN", "STUDENT")],
+  roleMiddleware("ADMIN", "STUDENT"),
   examController.getExamById,
 );
 
 router.get(
   "/classroom/:classroomId",
   authMiddleware,
-  roleMiddleware[("ADMIN", "STUDENT")],
+  roleMiddleware("ADMIN", "STUDENT"),
   examController.getExamsByClassroom,
 );
 
