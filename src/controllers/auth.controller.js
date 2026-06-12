@@ -68,19 +68,15 @@ exports.changePassword = async (req, res) => {
 
     const user = await User.findById(req.user._id);
 
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (oldPassword === newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "New password must be different from old password",
-      });
-    }
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 6 characters",
-      });
-    }
+
     if (!isMatch) {
       return res.status(400).json({
         success: false,
@@ -88,16 +84,41 @@ exports.changePassword = async (req, res) => {
       });
     }
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    if (oldPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from old password",
+      });
+    }
 
-    await user.save();
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
 
-    res.status(200).json({
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        password: hashedPassword,
+      },
+      {
+        new: true,
+        runValidators: false,
+      },
+    );
+
+    return res.status(200).json({
       success: true,
       message: "Password changed successfully",
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("CHANGE PASSWORD ERROR:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
