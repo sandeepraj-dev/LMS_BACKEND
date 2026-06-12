@@ -11,10 +11,10 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 
 //change password
-router.post("/change-password", authController.changePassword);
+router.put("/change-password", authController.changePassword);
 
 //update profile
-router.post("/profile", authController.updateProfile);
+router.put("/profile", authController.updateProfile);
 
 // Get Logged In User
 router.get("/me", authMiddleware, async (req, res) => {
