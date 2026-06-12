@@ -508,10 +508,9 @@ exports.getMyAttempts = async (req, res) => {
 exports.getAttemptResult = async (req, res) => {
   try {
     const { attemptId } = req.params;
-
     const attempt = await Attempt.findOne({
       _id: attemptId,
-      studentId: req.user._id,
+      // studentId: req.user._id,
     }).populate("examId", "title totalMarks duration");
 
     if (!attempt) {
