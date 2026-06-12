@@ -11,7 +11,7 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 
 //change password
-router.put("/change-password", authController.changePassword);
+router.put("/change-password", authMiddleware, authController.changePassword);
 
 //update profile
 router.put("/profile", authController.updateProfile);
