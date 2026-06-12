@@ -49,9 +49,8 @@ exports.getStudentsByClassroom = async (req, res) => {
 
     const classroom = await Classroom.findById(classroomId).populate(
       "students",
-      "name email phone",
+      "username fullName email role phone classroomIds createdAt updatedAt",
     );
-
     if (!classroom) {
       return res.status(404).json({
         success: false,
