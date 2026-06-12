@@ -25,7 +25,7 @@ router.get(
 router.get(
   "/attempts/:attemptId",
   authMiddleware,
-  roleMiddleware("STUDENT"),
+  roleMiddleware[("STUDENT", "ADMIN")],
   studentController.getAttemptResult,
 );
 
@@ -51,7 +51,6 @@ router.post(
 );
 
 // Admin routes last
-
 router.get(
   "/:id",
   authMiddleware,

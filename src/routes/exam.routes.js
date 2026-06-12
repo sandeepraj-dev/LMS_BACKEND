@@ -15,13 +15,24 @@ router.post(
 );
 
 // Get All Exams
-router.get("/", authMiddleware, examController.getExams);
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware[("ADMIN", "STUDENT")],
+  examController.getExams,
+);
 
-router.get("/:id", authMiddleware, examController.getExamById);
+router.get(
+  "/:id",
+  authMiddleware,
+  roleMiddleware[("ADMIN", "STUDENT")],
+  examController.getExamById,
+);
 
 router.get(
   "/classroom/:classroomId",
   authMiddleware,
+  roleMiddleware[("ADMIN", "STUDENT")],
   examController.getExamsByClassroom,
 );
 
