@@ -14,6 +14,13 @@ router.post(
   questionController.createQuestionsByClassroom,
 );
 
+router.get(
+  "/exam/:examId",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  questionController.getQuestionsByExamId,
+);
+
 // Get Questions By Classroom
 router.get(
   "/classroom/:classroomId",

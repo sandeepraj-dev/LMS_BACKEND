@@ -187,3 +187,34 @@ exports.deleteQuestion = async (req, res) => {
     });
   }
 };
+
+exports.getQuestionsByExamId = async (req, res) => {
+  try {
+    const { examId } = req.params;
+
+    const questions = await Question.find({ examId })
+      .populate("classroomId", "name")
+      .populate("examId", "title")
+      .sort({ createdAt: -1 });
+
+    if (!questions.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No questions found for this exam",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: questions.length,
+      data: questions,
+    });
+  } catch (error) {
+    console.error("GET QUESTIONS BY EXAM ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
