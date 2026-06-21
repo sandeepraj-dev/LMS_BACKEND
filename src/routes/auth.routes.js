@@ -14,7 +14,7 @@ router.post("/login", authController.login);
 router.put("/change-password", authMiddleware, authController.changePassword);
 
 //update profile
-router.put("/profile", authController.updateProfile);
+router.put("/profile", authMiddleware, authController.updateProfile);
 
 // Get Logged In User
 router.get("/me", authMiddleware, async (req, res) => {

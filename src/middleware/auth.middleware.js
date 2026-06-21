@@ -3,20 +3,11 @@ const User = require("../models/User");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    console.log("\n========== AUTH DEBUG ==========");
-
-    // Full headers
-    console.log("HEADERS =>", req.headers);
-
     // Get auth header
     const authHeader = req.headers.authorization;
 
-    console.log("AUTH HEADER =>", authHeader);
-
     // Validate header
     if (!authHeader) {
-      console.log("❌ No Authorization Header");
-
       return res.status(401).json({
         success: false,
         message: "No authorization header",
@@ -35,8 +26,6 @@ const authMiddleware = async (req, res, next) => {
     // Extract token
     const token = authHeader.split(" ")[1];
 
-    console.log("TOKEN =>", token);
-
     if (!token) {
       console.log("❌ Token Missing");
 
@@ -49,17 +38,11 @@ const authMiddleware = async (req, res, next) => {
     // Decode without verify
     const decodedWithoutVerify = jwt.decode(token);
 
-    console.log("DECODED WITHOUT VERIFY =>", decodedWithoutVerify);
-
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    console.log("✅ VERIFIED TOKEN =>", decoded);
-
     // Find user
     const user = await User.findById(decoded.id).select("-password");
-
-    console.log("USER FROM DB =>", user);
 
     if (!user) {
       console.log("❌ User Not Found");
@@ -72,9 +55,6 @@ const authMiddleware = async (req, res, next) => {
 
     // Attach user
     req.user = user;
-
-    console.log("✅ AUTH SUCCESS");
-    console.log("================================\n");
 
     next();
   } catch (error) {

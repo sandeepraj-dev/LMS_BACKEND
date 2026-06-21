@@ -87,9 +87,6 @@ exports.addStudents = async (req, res) => {
     const { id } = req.params;
     const { studentIds } = req.body;
 
-    console.log("Classroom:", id);
-    console.log("Students:", studentIds);
-
     const classroom = await Classroom.findById(id);
 
     if (!classroom) {

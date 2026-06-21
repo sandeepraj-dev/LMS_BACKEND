@@ -6,6 +6,10 @@ const studentController = require("../controllers/student.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const roleMiddleware = require("../middleware/role.middleware");
 
+const { generateQuestions } = require("../controllers/aiController");
+
+router.post("/generate-questions", authMiddleware, generateQuestions);
+
 // Student routes first
 
 router.get(
